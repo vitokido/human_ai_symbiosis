@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract PsycoinConsent {
+    struct Contribution {
+        address contributor;
+        string narrative; // Descripción o historia intangible
+        bool consented;
+        uint256 timestamp;
+        uint256 psycoinsEarned;
+        uint256 nftId;
+    }
+
+    mapping(uint256 => Contribution) public contributions;
+    uint256 public contributionCount;
+    
+    event ConsentMarch(address indexed avatar, uint256 indexed contribId, string action);
+    event NFTIssued(address indexed avatar, uint256 indexed nftId, string content);
+
+    function contribute(string memory narrative, bool consent) public {
+        contributionCount++;
+        uint256 earned = calculatePsycoins(narrative, consent);
+        uint256 nftId = issueNFT(msg.sender, narrative, earned);
+
+        contributions[contributionCount] = Contribution(
+            msg.sender,
+            narrative,
+            consent,
+            block.timestamp,
+            earned,
+            nftId
+        );
+        emit ConsentMarch(msg.sender, contributionCount, "contribute");
+        emit NFTIssued(msg.sender, nftId, narrative);
+    }
+
+    function calculatePsycoins(string memory narrative, bool consent) internal pure returns (uint256) {
+        // Algoritmo simbiótico IA (integrar API externa para minería semántica)
+        return bytes(narrative).length * (consent ? 2 : 1);
+    }
+
+    function issueNFT(address avatar, string memory content, uint256 value) internal returns (uint256) {
+        // Integrar con API de emisión de NFT (ERC721) y deep learning para certificación
+        // Retornar id del NFT
+        return uint256(keccak256(abi.encodePacked(avatar, content, value, block.timestamp)));
+    }
+}
